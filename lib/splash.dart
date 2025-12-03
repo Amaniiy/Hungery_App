@@ -18,6 +18,7 @@ class SplashScreen extends StatelessWidget {
 
           Spacer(),
           Image.asset("assets/images/splash.png"),
+          Gap(25),
         ],
       ),
     );

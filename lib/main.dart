@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sonic_app/features/auth/login/ui/login_ui.dart';
+import 'package:sonic_app/features/auth/signup/ui/signup.dart';
+import 'package:sonic_app/root.dart';
 import 'package:sonic_app/splash.dart';
 
 void main() {
@@ -16,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const SplashScreen(),
+      home: const Root(),
     );
   }
 }
