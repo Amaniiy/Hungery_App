@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sonic_app/features/auth/login/ui/login_ui.dart';
-import 'package:sonic_app/features/auth/signup/ui/signup.dart';
 import 'package:sonic_app/root.dart';
-import 'package:sonic_app/splash.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,9 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hungery',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
       home: const Root(),
     );
   }
