@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:sonic_app/features/home/ui/widgets/card_item.dart';
 import 'package:sonic_app/features/home/ui/widgets/categorys.dart';
 import 'package:sonic_app/features/home/ui/widgets/header.dart';
 import 'package:sonic_app/features/home/ui/widgets/search.dart';
+import 'package:sonic_app/features/products/ui/product.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
               scrolledUnderElevation: 0,
               pinned: true,
             ),
-
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -48,11 +47,21 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               sliver: SliverGrid(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  return CardItem(
-                    image: 'assets/images/card.png',
-                    text: 'Cheese Burger\n Wendy\'s Burger',
-                    desc: 'With cheddar cheese',
-                    rate: '4.9',
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProductDetails(),
+                        ),
+                      );
+                    },
+                    child: CardItem(
+                      image: 'assets/images/card.png',
+                      text: 'Cheese Burger\n Wendy\'s Burger',
+                      desc: 'With cheddar cheese',
+                      rate: '4.9',
+                    ),
                   );
                 }, childCount: 6),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
