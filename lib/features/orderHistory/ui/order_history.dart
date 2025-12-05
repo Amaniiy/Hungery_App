@@ -83,7 +83,10 @@ class OrderHistoryScreen extends StatelessWidget {
 
                     Container(
                       width: double.infinity,
-                      child: CustomButton(text: "Re Order", onPressed: () {}),
+                      child: CustomButton(
+                        text: " Order Again",
+                        onPressed: () {},
+                      ),
                     ),
                   ],
                 ),

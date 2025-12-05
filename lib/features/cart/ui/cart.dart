@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sonic_app/core/widgets/custom_button.dart';
 import 'package:sonic_app/features/cart/ui/widgets/cart_item.dart';
+import 'package:sonic_app/features/checkout/ui/checkout.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -90,7 +91,19 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
             const Spacer(),
-            CustomButton(text: "Checkout", onPressed: () {}),
+            CustomButton(
+              text: "Checkout",
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) {
+                      return CheckoutScreen();
+                    },
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
