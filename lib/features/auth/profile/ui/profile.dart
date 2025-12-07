@@ -164,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
-                        Gap(5),
+                        Gap(6),
                         Icon(Icons.logout, color: Colors.white),
                       ],
                     ),
