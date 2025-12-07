@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sonic_app/root.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sonic_app/core/routing/app_route.dart';
+import 'package:sonic_app/features/hungery_app.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Hungery',
-      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
-      home: const Root(),
-    );
-  }
+void main() async {
+  await ScreenUtil.ensureScreenSize();
+  runApp(HungeryApp(appRouter: AppRouter()));
 }

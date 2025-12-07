@@ -7,13 +7,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:sonic_app/main.dart';
+import 'package:sonic_app/core/routing/app_route.dart';
+import 'package:sonic_app/features/hungery_app.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(HungeryApp(appRouter: AppRouter()));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

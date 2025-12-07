@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:sonic_app/core/routing/Routes.dart';
 import 'package:sonic_app/core/theming/colorsapp.dart';
 import 'package:sonic_app/core/widgets/custom_text.dart';
 import 'package:sonic_app/features/auth/profile/ui/widgets/profile_text_filed.dart';
@@ -46,42 +48,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          children: [
-            Center(
-              child: Container(
-                height: 120,
-                width: 120,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      "https://i.pinimg.com/736x/c9/47/a9/c947a977a9aa6a599ffe3f07bb0c9306.jpg",
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Center(
+                child: Container(
+                  height: 120,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        "https://i.pinimg.com/736x/ba/17/79/ba177909e597e913b6b41bb12102a2e9.jpg",
+                      ),
+                      onError: (_, __) =>
+                          AssetImage("assets/images/error_image.png"),
+                      fit: BoxFit.cover,
                     ),
+
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(width: 5, color: Colors.white),
                   ),
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(width: 5, color: Colors.white),
                 ),
               ),
-            ),
-            Gap(30),
-            ProfileTextFiled(controller: _name, label: "Name"),
-            Gap(20),
-            ProfileTextFiled(controller: _email, label: "Email"),
-            Gap(20),
-            ProfileTextFiled(controller: _address, label: "Address"),
-            Gap(20),
-            Divider(),
-            Gap(10),
-             ListTile(
-       
-
+              Gap(30),
+              ProfileTextFiled(controller: _name, label: "Name"),
+              Gap(20),
+              ProfileTextFiled(controller: _email, label: "Email"),
+              Gap(20),
+              ProfileTextFiled(controller: _address, label: "Address"),
+              Gap(20),
+              Divider(),
+              Gap(10),
+              ListTile(
                 contentPadding: EdgeInsets.symmetric(
-                  vertical: 5,
+                  vertical: 0,
                   horizontal: 5,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.circular(20),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 tileColor: ColorsApp.componentColor,
                 leading: Image.asset("assets/images/visa.png"),
@@ -98,14 +103,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontWeight: FontWeight.w500,
                 ),
 
-                trailing: Radio<String>(
-                  activeColor: Colors.white,
-                  value: "visa",
-                  groupValue: "visa",
-                  onChanged: (value) {}),
+                trailing: CustomText(
+                  text: "Default",
+                  color: ColorsApp.mainColor,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w300,
                 ),
               ),
-          ],
+            ],
+          ),
+        ),
+      ),
+
+      bottomSheet: SafeArea(
+        child: Container(
+          height: 100,
+          decoration: BoxDecoration(color: ColorsApp.mainColor),
+
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      CustomText(
+                        text: "Edit Profile",
+                        color: ColorsApp.mainColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      Gap(5),
+                      Icon(CupertinoIcons.pen, color: ColorsApp.mainColor),
+                    ],
+                  ),
+                ),
+
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.login);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: ColorsApp.mainColor,
+                      border: Border.all(width: 5, color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        CustomText(
+                          text: "Logout",
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        Gap(5),
+                        Icon(Icons.logout, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

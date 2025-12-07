@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:sonic_app/core/routing/Routes.dart';
 import 'package:sonic_app/core/theming/colorsapp.dart';
 import 'package:sonic_app/core/widgets/custom_text.dart';
 import 'package:sonic_app/core/widgets/text_form_field.dart';
@@ -53,6 +54,7 @@ class LoginScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       if (_formKey.currentState!.validate()) {}
+                      Navigator.pushNamed(context, Routes.roots);
                     },
                     child: Container(
                       height: 50,
