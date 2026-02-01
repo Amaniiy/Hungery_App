@@ -25,59 +25,63 @@ class Signup extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Form(
             key: _formKey,
-            child: Column(
-              children: [
-                Gap(100),
-                SvgPicture.asset('assets/images/logo.svg'),
-                Gap(70),
-                CustomTextFormField(
-                  isPassword: false,
-                  controller: _nameController,
-                  hintText: "Name",
-                ),
-                Gap(15),
-                CustomTextFormField(
-                  isPassword: false,
-                  controller: _emailController,
-                  hintText: "Email",
-                ),
-                Gap(15),
-                CustomTextFormField(
-                  isPassword: true,
-                  controller: _passwordController,
-                  hintText: "Password",
-                ),
-                Gap(15),
-                CustomTextFormField(
-                  isPassword: true,
-                  controller: _confirmPasswordController,
-                  hintText: "Confirm Password",
-                ),
-                Gap(15),
-                GestureDetector(
-                  onTap: () {
-                    if (_formKey.currentState!.validate()) {}
-                    Navigator.pushNamed(context, Routes.login);
-                  },
-                  child: Container(
-                    height: 50,
-                    width: double.infinity,
-                    margin: EdgeInsets.only(top: 30),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: CustomText(
-                        text: "Signup",
-                        color: ColorsApp.mainColor,
-                        fontSize: 25,
-                        fontWeight: FontWeight.w900,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Gap(100),
+                  SvgPicture.asset('assets/images/logo.svg'),
+                  Gap(70),
+
+                  CustomTextFormField(
+                    isPassword: false,
+                    controller: _nameController,
+                    hintText: "Name",
+                  ),
+                  Gap(15),
+
+                  CustomTextFormField(
+                    isPassword: false,
+                    controller: _emailController,
+                    hintText: "Email",
+                  ),
+                  Gap(15),
+                  CustomTextFormField(
+                    isPassword: true,
+                    controller: _passwordController,
+                    hintText: "Password",
+                  ),
+                  Gap(15),
+                  CustomTextFormField(
+                    isPassword: true,
+                    controller: _confirmPasswordController,
+                    hintText: "Confirm Password",
+                  ),
+                  Gap(15),
+                  GestureDetector(
+                    onTap: () {
+                      if (_formKey.currentState!.validate()) {}
+                      Navigator.pushNamed(context, Routes.login);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: double.infinity,
+                      margin: EdgeInsets.only(top: 30),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: CustomText(
+                          text: "Signup",
+                          color: ColorsApp.mainColor,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

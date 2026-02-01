@@ -56,7 +56,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                       child: ToppingCard(
                         title: 'Tomato',
                         imagePath: 'assets/images/tomato.png',
-                        heroTag: 'tomato_$index', // 👈 Tag unique
+                        heroTag: 'tomato_$index',
                         onAdd: () {},
                       ),
                     );

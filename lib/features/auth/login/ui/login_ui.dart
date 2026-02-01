@@ -16,7 +16,6 @@ class LoginScreen extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
 
     return GestureDetector(
-      //GestureDetector دي بستخدمها عشان لما اضغط برة ال TextField الكيبورد يقفل وفيها onTap
       onTap: () {
         FocusScope.of(context).unfocus();
       },

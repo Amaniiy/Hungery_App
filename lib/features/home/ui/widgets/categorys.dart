@@ -36,7 +36,7 @@ class _CategoryItemState extends State<CategoryItem> {
               });
             },
             child: Container(
-              margin: const EdgeInsets.only(right: 8),
+              margin: const EdgeInsets.only(right: 8, bottom: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: selectedIndex == index

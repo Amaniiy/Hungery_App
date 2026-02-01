@@ -7,6 +7,8 @@ class CustomText extends StatelessWidget {
     required this.color,
     required this.fontSize,
     required this.fontWeight,
+    int? maxLines,
+    TextOverflow? overflow,
   });
 
   final String text;
