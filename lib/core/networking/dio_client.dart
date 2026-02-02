@@ -1,4 +1,4 @@
-/*import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:sonic_app/core/utils/pref_helper.dart';
 
 //هو المتحكم قي كل ال API calls
@@ -28,4 +28,3 @@ class DioClient {
   }
   Dio get dio => _dio;
 }
-*/

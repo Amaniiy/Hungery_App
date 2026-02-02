@@ -9,21 +9,25 @@ class CustomText extends StatelessWidget {
     required this.fontWeight,
     int? maxLines,
     TextOverflow? overflow,
+    this.onPressed,
   });
 
   final String text;
   final Color color;
   final double fontSize;
   final FontWeight fontWeight;
-
+  final VoidCallback? onPressed;
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: fontSize,
-        color: color,
-        fontWeight: fontWeight,
+    return MaterialButton(
+      onPressed: onPressed,
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: fontSize,
+          color: color,
+          fontWeight: fontWeight,
+        ),
       ),
     );
   }

@@ -1,4 +1,4 @@
-/*import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:sonic_app/core/networking/api_exceptions.dart';
 import 'package:sonic_app/core/networking/dio_client.dart';
 
@@ -45,4 +45,3 @@ class ApiService {
     }
   }
 }
-*/
