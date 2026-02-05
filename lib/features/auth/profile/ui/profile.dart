@@ -2,9 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:sonic_app/core/networking/api_error_model.dart';
 import 'package:sonic_app/core/theming/colorsapp.dart';
 import 'package:sonic_app/core/widgets/custom_text.dart';
+import 'package:sonic_app/core/widgets/snack_bar_auth.dart';
 import 'package:sonic_app/features/auth/data/auth_repo.dart';
+import 'package:sonic_app/features/auth/data/user_model.dart';
 import 'package:sonic_app/features/auth/login/ui/login_ui.dart';
 import 'package:sonic_app/features/auth/profile/ui/widgets/profile_text_filed.dart';
 
@@ -19,9 +23,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _address = TextEditingController();
-
-  AuthRepo authRepo = AuthRepo();
+  final TextEditingController _visa = TextEditingController();
   bool isLoading = false; // حالة Logout
+
+  UserModel? userModel;
+  AuthRepo authRepo = AuthRepo();
+
+  //get profile data Api
+  Future<void> _getProfileData() async {
+    try {
+      final user = await authRepo.getProfileData();
+
+      setState(() {
+        userModel = user;
+      });
+    } catch (e) {
+      String errorMessage = "An error in profile ";
+      if (e is ApiError) {
+        errorMessage = e.message;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(authSnackBar(errorMessage));
+    }
+  }
 
   // Logout API
   Future<void> _logout() async {
@@ -39,6 +62,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } finally {
       setState(() => isLoading = false);
     }
+  }
+
+  @override
+  void initState() {
+    //هنا بنجيب بيانات اليوزر
+    _getProfileData().then((v) {
+      _name.text = userModel?.name ?? '';
+      _email.text = userModel?.email ?? '';
+      _address.text = userModel?.address ?? '';
+    });
+
+    super.initState();
   }
 
   @override
@@ -66,69 +101,92 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Center(
-                child: Container(
-                  height: 120,
-                  width: 120,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        "https://i.pinimg.com/736x/ba/17/79/ba177909e597e913b6b41bb12102a2e9.jpg",
+      body: RefreshIndicator(
+        color: Colors.white,
+        backgroundColor: ColorsApp.mainColor,
+        onRefresh: () async {
+          await _getProfileData();
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: SingleChildScrollView(
+            child: Skeletonizer(
+              enabled: userModel == null,
+              child: Column(
+                children: [
+                  Center(
+                    //profile image Api
+                    child: Container(
+                      height: 120,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        image:
+                            //image Api
+                            userModel?.image != null &&
+                                userModel!.image!.isNotEmpty
+                            ? DecorationImage(
+                                image: NetworkImage(userModel!.image!),
+                                onError: (_, __) => const AssetImage(
+                                  "assets/images/error_image.png",
+                                ),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(width: 5, color: Colors.white),
                       ),
-                      onError: (_, __) =>
-                          const AssetImage("assets/images/error_image.png"),
-                      fit: BoxFit.cover,
                     ),
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(width: 5, color: Colors.white),
                   ),
-                ),
+                  const Gap(30),
+                  ProfileTextFiled(controller: _name, label: "Name"),
+                  const Gap(20),
+                  ProfileTextFiled(controller: _email, label: "Email"),
+                  const Gap(20),
+                  ProfileTextFiled(controller: _address, label: "Address"),
+                  const Gap(20),
+                  const Divider(),
+                  const Gap(10),
+                  userModel?.visa == null
+                      ?
+                        //لو اليوزر مدخلش فيزا قبل كدا هيظهرلوا المكان دا عشان يدخله لاول مره وبعدي كدا يظهرله جزء الفيزا العادي
+                        ProfileTextFiled(
+                          controller: _visa,
+                          label: "ADD VISA CARD",
+                          textInputType: TextInputType.number,
+                        )
+                      : ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 0,
+                            horizontal: 5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          tileColor: ColorsApp.componentColor,
+                          leading: Image.asset("assets/images/visa.png"),
+                          subtitle: CustomText(
+                            text: userModel?.visa ?? "3566 **** **** 0505",
+                            color: Colors.black,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          title: const CustomText(
+                            text: "Debit card",
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          trailing: CustomText(
+                            text: "Default",
+                            color: ColorsApp.mainColor,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                ],
               ),
-              const Gap(30),
-              ProfileTextFiled(controller: _name, label: "Name"),
-              const Gap(20),
-              ProfileTextFiled(controller: _email, label: "Email"),
-              const Gap(20),
-              ProfileTextFiled(controller: _address, label: "Address"),
-              const Gap(20),
-              const Divider(),
-              const Gap(10),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 0,
-                  horizontal: 5,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                tileColor: ColorsApp.componentColor,
-                leading: Image.asset("assets/images/visa.png"),
-                subtitle: const CustomText(
-                  text: "3566 **** **** 0505",
-                  color: Colors.black,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-                title: const CustomText(
-                  text: "Debit card",
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-                trailing: CustomText(
-                  text: "Default",
-                  color: ColorsApp.mainColor,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -204,3 +262,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+//مهم نستخدم Skeletonizer عشان يبان ان الصفحه كلها بتحمل

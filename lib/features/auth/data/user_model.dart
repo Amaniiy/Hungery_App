@@ -17,12 +17,12 @@ class UserModel {
   // from json اللي موجود في postman لازم تكون نفس الاسم الل فس اقواس
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      name: json['name'] ?? "",
-      email: json['email'] ?? "",
-      image: json['image'] ?? "",
-      token: json['token'] ?? "",
-      visa: json['visa'] ?? "",
-      address: json['address'] ?? "",
+      name: json['name'],
+      email: json['email'],
+      image: json['image'],
+      token: json['token'],
+      visa: json['visa'],
+      address: json['address'],
     );
   }
 }

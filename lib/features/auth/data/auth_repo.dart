@@ -5,6 +5,7 @@ import 'package:sonic_app/core/networking/api_service.dart';
 import 'package:sonic_app/core/utils/pref_helper.dart';
 import 'package:sonic_app/features/auth/data/user_model.dart';
 
+//api service دا اللي فيه post,get,put,delete
 class AuthRepo {
   ApiService apiService = ApiService();
 
@@ -93,8 +94,23 @@ class AuthRepo {
       throw ApiError(message: e.toString());
     }
   }
-
+  //---------------------------------------------------------------------
   //get profile data
+
+  //لازم نعمل login الاول
+  //هشوف الفيديو وانا بطبق في الابلكيشن
+  Future<UserModel?> getProfileData() async {
+    try {
+      final response = await apiService.get('/profile');
+      return UserModel.fromJson(response['data']);
+    } on DioException catch (e) {
+      throw ApiExceptions.handleError(e);
+    } catch (e) {
+      throw ApiError(message: e.toString());
+    }
+  }
+
+  //----------------------------------------------------------------------
   //update profile data
 
   //logout

@@ -5,13 +5,17 @@ class ProfileTextFiled extends StatelessWidget {
     super.key,
     required this.controller,
     required this.label,
+    this.textInputType,
   });
   final TextEditingController controller;
   final String label;
+  final TextInputType? textInputType;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      //textInputType دا اللي بيحدد نوع الكيبورد لو ايميل او رقم او نص عادي
+      keyboardType: textInputType,
       controller: controller,
       cursorColor: Colors.white,
       cursorHeight: 20,
