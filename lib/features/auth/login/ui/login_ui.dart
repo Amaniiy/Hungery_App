@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:sonic_app/core/networking/api_error_model.dart';
-import 'package:sonic_app/core/routing/Routes.dart';
 import 'package:sonic_app/core/theming/colorsapp.dart';
 import 'package:sonic_app/core/widgets/custom_text.dart';
+import 'package:sonic_app/core/widgets/snack_bar_auth.dart';
 import 'package:sonic_app/core/widgets/text_form_field.dart';
 import 'package:sonic_app/features/auth/data/auth_repo.dart';
+import 'package:sonic_app/features/auth/signup/ui/signup.dart';
 import 'package:sonic_app/root.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,16 +18,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
 
-  //Api///////////////////////////////////////////////////////////
-  AuthRepo authRepo = AuthRepo();
+  // Api
+  final AuthRepo authRepo = AuthRepo();
+
   Future<void> login() async {
-    if (!_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate()) {
       setState(() => isLoading = true);
 
       try {
@@ -34,46 +36,29 @@ class _LoginScreenState extends State<LoginScreen> {
           _emailController.text.trim(),
           _passwordController.text.trim(),
         );
+
         if (user != null) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Root()),
+            MaterialPageRoute(builder: (_) => Root()),
           );
         }
-        setState(() => isLoading = false);
       } catch (e) {
+        String errorMessage = "Unhandled error";
+        if (e is ApiError) errorMessage = e.message;
+        ScaffoldMessenger.of(context).showSnackBar(authSnackBar(errorMessage));
+      } finally {
         setState(() => isLoading = false);
-        String errorMessage = "unhandled error";
-
-        if (e is ApiError) {
-          errorMessage = e.message;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            elevation: 10,
-            margin: EdgeInsets.only(bottom: 35, left: 20, right: 20),
-            clipBehavior: Clip.none,
-            backgroundColor: Colors.red[900],
-            content: Row(
-              children: [
-                Icon(Icons.error_outline, color: Colors.white),
-                Gap(10),
-                CustomText(
-                  text: 'An error occurred: $errorMessage',
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ],
-            ),
-          ),
-        );
       }
     }
   }
 
-  ///////////////////////////////////////////////////
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,56 +75,62 @@ class _LoginScreenState extends State<LoginScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  Gap(100),
+                  const Gap(100),
                   SvgPicture.asset('assets/images/logo.svg'),
-                  Gap(10),
-
-                  CustomText(
-                    text: "welcome back,discover the fast food",
+                  const Gap(10),
+                  const CustomText(
+                    text: "Welcome back, discover the fast food",
                     color: Colors.white,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
-                  Gap(70),
+                  const Gap(70),
                   CustomTextFormField(
                     isPassword: false,
                     controller: _emailController,
                     hintText: "Email",
                   ),
-                  Gap(20),
+                  const Gap(20),
                   CustomTextFormField(
                     isPassword: true,
                     controller: _passwordController,
                     hintText: "Password",
                   ),
                   GestureDetector(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {}
-                      Navigator.pushNamed(context, Routes.roots);
-                    },
+                    onTap: isLoading ? null : login,
                     child: Container(
                       height: 50,
                       width: double.infinity,
-                      margin: EdgeInsets.only(top: 30),
+                      margin: const EdgeInsets.only(top: 30),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(
                         child: isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : CustomText(
-                                //api
-                                onPressed: login,
-                                //
+                            ? const CircularProgressIndicator()
+                            : const CustomText(
                                 text: "Login",
                                 color: ColorsApp.mainColor,
                                 fontSize: 25,
                                 fontWeight: FontWeight.w900,
                               ),
                       ),
+                    ),
+                  ),
+                  const Gap(20),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const Signup()),
+                      );
+                    },
+                    child: const CustomText(
+                      text: "Signup",
+                      color: ColorsApp.mainColor,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ],

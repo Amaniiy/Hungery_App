@@ -4,22 +4,34 @@ import 'package:sonic_app/core/networking/api_error_model.dart';
 class ApiExceptions {
   static ApiError handleError(DioException error) {
     final statusCode = error.response?.statusCode;
-    final responseData = error.response?.data;
-    if (responseData is Map<String, dynamic> &&
-        responseData['message'] != null) {
-      return ApiError(message: responseData['message'], statuscode: statusCode);
+    final data = error.response?.data;
+
+    if (statusCode != null) {
+      if (data is Map<String, dynamic> && data['message'] != null) {
+        return ApiError(message: data['message'], statusCode: statusCode);
+      }
     }
+
+    if (statusCode == 302) {
+      throw ApiError(message: 'This Email Already Used');
+    }
+
+    print(statusCode);
+    print(data);
+
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
-        return ApiError(message: "Connection timeout");
-      case DioExceptionType.receiveTimeout:
-        return ApiError(message: "Receive timeout");
+        return ApiError(
+          message: "Connection timeout. Please check your internet connection",
+        );
       case DioExceptionType.sendTimeout:
-        return ApiError(message: "Send timeout");
-      case DioExceptionType.cancel:
-        return ApiError(message: "Request was cancelled");
+        return ApiError(message: "Request timeout. Please try again");
+      case DioExceptionType.receiveTimeout:
+        return ApiError(message: "Response timeout. Please try again");
       default:
-        return ApiError(message: "Please Try Again");
+        return ApiError(
+          message: "An unexpected error occurred. Please try again",
+        );
     }
   }
 }

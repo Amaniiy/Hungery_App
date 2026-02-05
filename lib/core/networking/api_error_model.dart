@@ -1,8 +1,9 @@
 class ApiError {
   final String message;
-  final int? statuscode;
+  final int? statusCode;
 
-  ApiError({required this.message, this.statuscode});
+  ApiError({required this.message, this.statusCode});
+
   @override
   String toString() {
     return message;

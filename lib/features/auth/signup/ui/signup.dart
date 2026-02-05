@@ -1,23 +1,64 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:sonic_app/core/routing/Routes.dart';
+import 'package:sonic_app/core/networking/api_error_model.dart';
 import 'package:sonic_app/core/theming/colorsapp.dart';
 import 'package:sonic_app/core/widgets/custom_text.dart';
+import 'package:sonic_app/core/widgets/snack_bar_auth.dart';
 import 'package:sonic_app/core/widgets/text_form_field.dart';
+import 'package:sonic_app/features/auth/data/auth_repo.dart';
+import 'package:sonic_app/features/auth/login/ui/login_ui.dart';
+import 'package:sonic_app/root.dart';
 
-class Signup extends StatelessWidget {
+class Signup extends StatefulWidget {
   const Signup({super.key});
 
   @override
+  State<Signup> createState() => _SignupState();
+}
+
+class _SignupState extends State<Signup> {
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
+  //Api
+  AuthRepo authRepo = AuthRepo();
+  Future<void> _signup() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        setState(() => isLoading = true);
+        final user = await authRepo.signup(
+          _nameController.text.trim(),
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+          _confirmPasswordController.text.trim(),
+        );
+        if (user != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Root()),
+          );
+        }
+        setState(() => isLoading = false);
+      } catch (e) {
+        setState(() => isLoading = false);
+        String errorMessage = 'An error in signup. Please try again.';
+        if (e is ApiError) {
+          errorMessage = e.message;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(authSnackBar(errorMessage));
+      }
+    }
+  }
+
+  /////////
+
+  @override
   Widget build(BuildContext context) {
-    TextEditingController _emailController = TextEditingController();
-    TextEditingController _nameController = TextEditingController();
-    TextEditingController _passwordController = TextEditingController();
-    TextEditingController _confirmPasswordController = TextEditingController();
-
-    final _formKey = GlobalKey<FormState>();
-
     return Scaffold(
       backgroundColor: ColorsApp.mainColor,
       body: Center(
@@ -57,28 +98,47 @@ class Signup extends StatelessWidget {
                     hintText: "Confirm Password",
                   ),
                   Gap(15),
-                  GestureDetector(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {}
-                      Navigator.pushNamed(context, Routes.login);
-                    },
-                    child: Container(
-                      height: 50,
-                      width: double.infinity,
-                      margin: EdgeInsets.only(top: 30),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: CustomText(
-                          text: "Signup",
-                          color: ColorsApp.mainColor,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w900,
+
+                  isLoading
+                      ? CupertinoActivityIndicator()
+                      : GestureDetector(
+                          onTap: () {
+                            _signup();
+                          },
+                          child: Container(
+                            height: 50,
+                            width: double.infinity,
+                            margin: EdgeInsets.only(top: 30),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: CustomText(
+                                text: "Signup",
+                                color: ColorsApp.mainColor,
+                                fontSize: 25,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+
+                  CustomText(
+                    text: "login",
+                    onpressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return LoginScreen();
+                          },
+                        ),
+                      );
+                    },
+                    color: ColorsApp.mainColor,
+                    fontSize: 25,
+                    fontWeight: FontWeight.w900,
                   ),
                 ],
               ),
