@@ -9,7 +9,6 @@ import 'package:sonic_app/features/auth/data/user_model.dart';
 class AuthRepo {
   ApiService apiService = ApiService();
 
-  //-----------------------------------------------------------------------------
   //login
   Future<UserModel?> login(String email, String password) async {
     try {
@@ -51,7 +50,6 @@ class AuthRepo {
   }
 
   //signup
-
   Future<UserModel?> signup(
     String name,
     String email,
@@ -94,9 +92,8 @@ class AuthRepo {
       throw ApiError(message: e.toString());
     }
   }
-  //---------------------------------------------------------------------
-  //get profile data
 
+  //get profile data
   //لازم نعمل login الاول
   //هشوف الفيديو وانا بطبق في الابلكيشن
   Future<UserModel?> getProfileData() async {
@@ -110,11 +107,55 @@ class AuthRepo {
     }
   }
 
-  //----------------------------------------------------------------------
   //update profile data
+  Future<UserModel?> updateProfileData({
+    required String name,
+    required String email,
+    required String address,
+    String? visa,
+    String? imagepath,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'name': name,
+        'email': email,
+        'address': address,
+        if (visa != null && visa.isNotEmpty) 'visa': visa,
+        if (imagepath != null && imagepath.isNotEmpty)
+          'image': await MultipartFile.fromFile(
+            imagepath,
+            filename: 'profile.jpg',
+          ),
+      });
+
+      final response = await apiService.put('/update-profile', formData);
+
+      if (response is ApiError) {
+        throw response;
+      }
+
+      if (response is Map<String, dynamic>) {
+        final msg = response['message'];
+        final code = response['code'];
+        final coder = int.tryParse(code);
+        final data = response['data'];
+
+        if (coder != 200 && coder != 201) {
+          throw ApiError(message: msg ?? "unknown error");
+        }
+
+        return UserModel.fromJson(data);
+      } else {
+        throw ApiError(message: 'Unexpected Error From Server');
+      }
+    } on DioException catch (e) {
+      throw ApiExceptions.handleError(e);
+    } catch (e) {
+      throw ApiError(message: e.toString());
+    }
+  }
 
   //logout
-  //دي عشان لما يضغط علي زر تسجيل الخروج
   Future<void> logout() async {
     final response = await apiService.post('/logout', {});
     if (response['data'] != null) {

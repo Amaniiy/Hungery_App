@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sonic_app/core/networking/api_error_model.dart';
 import 'package:sonic_app/core/theming/colorsapp.dart';
+import 'package:sonic_app/core/widgets/custom_button.dart';
 import 'package:sonic_app/core/widgets/custom_text.dart';
 import 'package:sonic_app/core/widgets/snack_bar_auth.dart';
 import 'package:sonic_app/features/auth/data/auth_repo.dart';
@@ -25,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _address = TextEditingController();
   final TextEditingController _visa = TextEditingController();
   bool isLoading = false; // حالة Logout
-
+  bool isLoadingUpdating = false; // حالة update profile
   UserModel? userModel;
   AuthRepo authRepo = AuthRepo();
 
@@ -64,6 +68,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  //update profile Api
+  Future<void> _updateProfile() async {
+    try {
+      setState(() => isLoadingUpdating = true);
+      final user = await authRepo.updateProfileData(
+        name: _name.text.trim(),
+        email: _email.text.trim(),
+        address: _address.text.trim(),
+        visa: _visa.text.trim(),
+        imagepath: selectedImage,
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(authSnackBar("Profile updated successfully!"));
+      setState(() => isLoadingUpdating = false);
+      //بعد ما بنعمل تحديث للبيانات بنحدث اليوزر موديل عشان يبان في الصفحه
+      setState(() => userModel = user);
+      await _getProfileData();
+    } catch (e) {
+      setState(() => isLoadingUpdating = false);
+
+      String errorMessage = "Failed to update profile.";
+      if (e is ApiError) {
+        errorMessage = e.message;
+        print(errorMessage);
+      }
+    }
+  }
+
+  //image picker
+  String? selectedImage;
+  Future<void> _pickImage() async {
+    final pickerImage = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickerImage != null) {
+      setState(() {
+        selectedImage = pickerImage.path;
+      });
+    }
+  }
+
   @override
   void initState() {
     //هنا بنجيب بيانات اليوزر
@@ -72,7 +118,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _email.text = userModel?.email ?? '';
       _address.text = userModel?.address ?? '';
     });
-
     super.initState();
   }
 
@@ -117,28 +162,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Center(
                     //profile image Api
                     child: Container(
-                      height: 120,
-                      width: 120,
                       decoration: BoxDecoration(
-                        image:
-                            //image Api
-                            userModel?.image != null &&
-                                userModel!.image!.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(userModel!.image!),
-                                onError: (_, __) => const AssetImage(
-                                  "assets/images/error_image.png",
-                                ),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(width: 5, color: Colors.white),
+                        shape: BoxShape.circle,
+                        border: Border.all(width: 1, color: Colors.black),
+                        color: Colors.grey.shade300,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(1),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                          padding: const EdgeInsets.all(3),
+                          child: Container(
+                            height: 100,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                width: 1,
+                                color: ColorsApp.mainColor,
+                              ),
+                              color: Colors.grey.shade100,
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            //لو اليوزر اختار صورة جديدة من الجاليري بنعرضها لو مش اختار بنعرض الصورة القديمة لو موجودة ولو مفيش صورة خالص بنعرض ايقونة الشخص الافتراضية
+                            //Api!!!!!!!!!!
+                            child: selectedImage != null
+                                ? Image.file(
+                                    File(selectedImage!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : (userModel?.image != null &&
+                                      userModel!.image!.isNotEmpty)
+                                ? Image.network(
+                                    userModel!.image!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, err, builder) =>
+                                        Icon(Icons.person),
+                                  )
+                                : Icon(Icons.person),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   const Gap(30),
+                  CustomButton(text: 'upload photo', onPressed: _pickImage),
+
                   ProfileTextFiled(controller: _name, label: "Name"),
                   const Gap(20),
                   ProfileTextFiled(controller: _email, label: "Email"),
@@ -209,18 +281,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Row(
-                    children: [
-                      const CustomText(
-                        text: "Edit Profile",
-                        color: ColorsApp.mainColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      const Gap(5),
-                      Icon(CupertinoIcons.pen, color: ColorsApp.mainColor),
-                    ],
-                  ),
+                  child: isLoadingUpdating
+                      ? CupertinoActivityIndicator(color: Colors.white)
+                      : Row(
+                          children: [
+                            CustomText(
+                              onpressed: _updateProfile,
+                              text: "Edit Profile",
+                              color: ColorsApp.mainColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            const Gap(5),
+                            Icon(
+                              CupertinoIcons.pen,
+                              color: ColorsApp.mainColor,
+                            ),
+                          ],
+                        ),
                 ),
 
                 // Logout Button
