@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sonic_app/core/networking/api_error_model.dart';
 import 'package:sonic_app/core/theming/colorsapp.dart';
-import 'package:sonic_app/core/widgets/custom_button.dart';
 import 'package:sonic_app/core/widgets/custom_text.dart';
 import 'package:sonic_app/core/widgets/snack_bar_auth.dart';
 import 'package:sonic_app/features/auth/data/auth_repo.dart';
@@ -126,6 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _name.dispose();
     _email.dispose();
     _address.dispose();
+    _visa.dispose();
     super.dispose();
   }
 
@@ -209,8 +209,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const Gap(30),
-                  CustomButton(text: 'upload photo', onPressed: _pickImage),
-
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Card(
+                          elevation: 0.0,
+                          color: const Color.fromARGB(255, 6, 78, 13),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CustomText(
+                                  text: 'Upload',
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                Gap(10),
+                                Icon(
+                                  CupertinoIcons.camera,
+                                  size: 17,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      //مفيش Api
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Card(
+                          elevation: 0.0,
+                          color: const Color.fromARGB(255, 111, 2, 40),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CustomText(
+                                  text: 'Remove',
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                ),
+                                Gap(10),
+                                Icon(
+                                  CupertinoIcons.trash,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ), //Form
                   ProfileTextFiled(controller: _name, label: "Name"),
                   const Gap(20),
                   ProfileTextFiled(controller: _email, label: "Email"),
@@ -219,12 +283,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const Gap(20),
                   const Divider(),
                   const Gap(10),
+
+                  //Visa Card
+                  //هنا بنشوف اذا اليوزر مدخلش فيزا قبل كدا هيظهر له المكان دا عشان يدخله لاول مره وبعدي كدا يظهرله جزء الفيزا العادي
                   userModel?.visa == null
-                      ?
-                        //لو اليوزر مدخلش فيزا قبل كدا هيظهرلوا المكان دا عشان يدخله لاول مره وبعدي كدا يظهرله جزء الفيزا العادي
-                        ProfileTextFiled(
+                      ? ProfileTextFiled(
                           controller: _visa,
                           label: "ADD VISA CARD",
+                          //الكيبورد تبقي ارقام بس
                           textInputType: TextInputType.number,
                         )
                       : ListTile(
@@ -238,6 +304,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           tileColor: ColorsApp.componentColor,
                           leading: Image.asset("assets/images/visa.png"),
                           subtitle: CustomText(
+                            //هنا بنعرض اخر 4 ارقام من الفيزا لو موجودة في اليوزر موديل لو مش موجودة بنعرض رقم افتراضي
+                            //Api!!!!!!!!!!
                             text: userModel?.visa ?? "3566 **** **** 0505",
                             color: Colors.black,
                             fontSize: 13,
@@ -281,28 +349,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
+                  //دا الزرار بتاع تحديث بيانات البروفايل لو اليوزر بيعمل تحديث هيظهر له مؤشر تحميل لو مش بيعمل تحديث هيظهر له ايقونة القلم وكلمة Edit Profile
                   child: isLoadingUpdating
-                      ? CupertinoActivityIndicator(color: Colors.white)
-                      : Row(
-                          children: [
-                            CustomText(
-                              onpressed: _updateProfile,
-                              text: "Edit Profile",
-                              color: ColorsApp.mainColor,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            const Gap(5),
-                            Icon(
-                              CupertinoIcons.pen,
-                              color: ColorsApp.mainColor,
-                            ),
-                          ],
+                      ? CupertinoActivityIndicator(color: ColorsApp.mainColor)
+                      : GestureDetector(
+                          //Api to update all profile data
+                          onTap: _updateProfile,
+                          child: Row(
+                            children: [
+                              CustomText(
+                                text: "Edit Profile",
+                                color: ColorsApp.mainColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              const Gap(5),
+                              Icon(
+                                CupertinoIcons.pen,
+                                color: ColorsApp.mainColor,
+                              ),
+                            ],
+                          ),
                         ),
                 ),
 
                 // Logout Button
                 GestureDetector(
+                  //Api to logout
                   onTap: isLoading ? null : _logout,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
